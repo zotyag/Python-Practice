@@ -1,4 +1,4 @@
-#Pyton-Practice
+# Pyton-Practice
 
 I made this repository to practice Python as well as git.
 
