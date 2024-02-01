@@ -56,6 +56,7 @@ class Person:
         except ValueError:
             raise ValueError("Invalid Day Of Birth")
         self._dob = dob
+        self.age=self.determine_age()
 
     def determine_age(self):
         today = str(date.today())
