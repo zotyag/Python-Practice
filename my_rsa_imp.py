@@ -142,40 +142,69 @@ def decrypt(ciphertext, crt_params):
     return CRT(ciphertext, d, p, q)
 
 
+def raw_sign(message_int, crt_params):
+    if message_int >= crt_params[1] * crt_params[2]:
+        raise ValueError("Message too large for modulus")
+    return decrypt(message_int, crt_params)
+
+def raw_verify(signature, message_int, public_key):
+    e, n = public_key
+    decrypted_message = encrypt(signature, public_key)
+    return decrypted_message == message_int
+
+
 
 if __name__ == '__main__':
-    print("asd")
-print(extended_euclidean_algorithm(10368,5))
+    print("Ex_Euc_Alg: 10368,5")
+    print(extended_euclidean_algorithm(10368,5),"\n")
 
-print(mod_exp(2, 69, 1105))  # Output: 24
+    print("Mod_Exp: ")
+    print(mod_exp(2, 69, 1105),"\n")  # Output: 24
 
-# CRT Example usage
-c = 1727
-d = 727
-p = 83
-q = 67
-result = CRT(c, d, p, q)
-print(result)
+    print("Crt")
+    # CRT Example usage
+    c = 1727
+    d = 727
+    p = 83
+    q = 67
+    result = CRT(c, d, p, q)
+    print(result,"\n")
 
 
-print("Test full RSA:\n")
+    print("-------------------------\nTest full RSA:\n-------------------------\n")
 
-message = 14
-public_key, private_key, crt_params = generate_keys(bits=8)
+    message = 14
+    public_key, private_key, crt_params = generate_keys(bits=8)
 
-#public_key, private_key, crt_params = (19, 943),(139,943),(139,41,23)
-# Public key: (19, 943)
-# Private key: (139, 943)
-# Encrypted message: 79
-# Decrypted message: 14
-print("Message:", message)
-print("Public key:", public_key)
-print("Private key:", private_key)
+    #public_key, private_key, crt_params = (19, 943),(139,943),(139,41,23)
+    # Public key: (19, 943)
+    # Private key: (139, 943)
+    # Encrypted message: 79
+    # Decrypted message: 14
+    print("Message:", message)
+    print("Public key:", public_key)
+    print("Private key:", private_key)
 
-encrypted = encrypt(message, public_key)
-print("Encrypted message:", encrypted)
+    encrypted = encrypt(message, public_key)
+    print("Encrypted message:", encrypted)
 
-decrypted = decrypt(encrypted, crt_params)
-print("Decrypted message:", decrypted)
+    decrypted = decrypt(encrypted, crt_params)
+    print("Decrypted message:", decrypted)
+
+    print("-------------------------\nTest Dig Sign\n-------------------------\n")
+
+    public_key, private_key, crt_params = generate_keys(bits=256)
+
+    # Convert message to integer directly (vulnerable to manipulation)
+    message = "No hash"
+    message_int = int.from_bytes(message.encode('utf-8'), byteorder='big')
+
+    signature = raw_sign(message_int, crt_params)
+    is_valid = raw_verify(signature, message_int, public_key)
+
+    print(f"Original Message: {message}")
+    print(f"Message as Integer: {message_int}")
+    print(f"Signature: {signature}")
+    print(f"Signature Valid: {is_valid}")
 
 
